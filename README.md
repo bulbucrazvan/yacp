@@ -1,1 +1,23 @@
-# yacp
+# Bulbuc Razvan - Grupa B2  
+YACP (***Y***et ***A***nother ***C***hess ***P***roject)  
+The project is structured in 2 main packages -- the *gamelogic* package and the *GUI* package.
+
+### Game Logic package  
+The classes and their respective functionalities are as following:  
+- ***Game***: The main gamelogic class, acting as the model for an entire game. It stores a *Board*, an array of size 2 of *Player* objects, a *TurnTimer* object, flags for whether the game is running, or ended, the current player counter, and a reference to the *GUI* *GameController* object. Other than the generic getters and setters, *Game* is reponsible for initalizing the *Player* objects, the *Board* object, and for controlling the game flow(whether to start, pause, or end it), which also means controlling the *TurnTimer* object.
+- ***Position***: Represents a position on the game board. It stores the X and Y values of a position, and the String representation of it(e.g "A6").
+- ***Move***: Represents a move to be executed on the game board. Stores 2 *Position* objects: the starting and ending positions of the move.
+- ***Player***: Represents a player. Stores the player colour(white or black), and the remaining time the player has to make their moves. Only has getters and setters.
+- ***Board***: Represents the game board model. Stores a 8x8 array of *Piece* objects, and is responsible for executing moves made by the players, and informing the *Game* object when the game has ended by a King being taken.
+- ***Pieces***: Package storing the game pieces:  
+  - ***Piece***: The abstract class for a chess piece. Has a *PieceColor* object(which is simply an enum representing either Black or White), a *Position* object for the current position of the piece, and a *MoveChecker* object. Has 2 abstract methods: *getName()*, which gets the name of a piece(e.g "Rook"), which is used by the *GUI* to call the appropriate *.png* to represent the piece on the screen; and *getPieceMoveChecker()*, which is a factory method that returns the corresponding *MoveChecker* class for a piece. The non-abstract methods are to change the *Position* of a piece, getters for the *PieceColor* and *PiecePosition*, and the *getPossibleMoves()* method, which calls the *getPossibleMoves()* method of the *MoveChecker*, to get a *List\<Position\>* of possible moves that can be performed by the piece.
+  - ***MoveChecker***: An abstract class with a single public method: *getPossibleMoves()*, which returns a *List\<Position\>* of all the possible moves a piece can perform. This method is abstract, so every concrete *MoveChecker* implements the logic for its corresponding piece.
+
+### GUI package
+The *GUI* of this project has 2 screens: the *Menu*, which simply has 2 buttons to start a game, and quit the application, and the main game screen. The menu is controlled by *MenuController*, and the game is controleld by *GameController*, which has 3 panels: *InfoPanel*, *BoardPanel*, and *ControlPanel*.
+- ***Menu***: Because this screen only has 2 buttons, it was made with *SceneBuilder*. The Controller for this screen is *MenuController*, which uses the *Menu.fxml* file. The Controller has 2 event handlers for the buttons: the *startGame()* handler, which changes the *Stage*'s *Scene* to that of the main game, and the *quit()* handler, which simply closes the application.
+- ***GameController***: The main controller for the game. Stores the basic JavaFX elements: the *Stage* and *Scene*. This panel itself is a *BorderPane*, and stores the *InfoPanel* in the North section, the *BoardPanel* in the Center section, and *ControlPanel* in the South section. Finally, the controller also has a reference to the *Game* object, and acts as the communicator between the *gamelogic* elements, and the *GUI* panels. 
+- ***InfoPanel***: A *HBox* that shows the current player and their timer, both stored as *Labels*. The labels are changed by methods which are called from the ***GameController***.
+- ***ControlPanel***: A *HBox* that has 2 buttons: a *start/stop* button, and a *quit* button. The *start/stop* button starts or stops the game, done by calling the *GameController*'s *startGame()* or *stopGame()* methods. Those methods, in turn, call the same respective methods from the *Game* object, which starts/pauses the timer and sets the *gameRunningFlag* to true/false. The *quit* button simply changes the scene back to the *Menu* scene.
+- ***BoardPanel***: A *GridPane* that represents the game board. Stores a 2D array of *Tile* objects and is tasked with controlling them. Communicates tightly with the *gamelogic* *Board*, by sending the read user input to it for checking. 
+- ***Tile***: A *StackPane* that represents a tile. Stores all the necessary elements for a tile's background, border, and piece image. Stores the event handler for a player's click on the tile, *onTileClick()*, which calls a method from *BoardPanel* to respond to the click.  
